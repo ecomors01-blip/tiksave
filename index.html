@@ -3,31 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TikSave — Télécharge TikTok sans pub</title>
+<title>TikSave — TikTok & Instagram sans pub</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #0a0a0a; --surface: #111; --border: #222;
     --accent: #fe2c55; --accent2: #25f4ee;
+    --insta: #E1306C; --insta2: #F77737;
     --text: #f0f0f0; --muted: #666; --success: #1db954;
   }
   body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
   .app { width: 100%; max-width: 560px; }
-  .header { text-align: center; margin-bottom: 3rem; }
+
+  .header { text-align: center; margin-bottom: 2.5rem; }
   .logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1rem; }
   .logo-mark { width: 44px; height: 44px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: #fff; }
   .logo-name { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
   .logo-name span { color: var(--accent); }
   .tagline { font-size: 13px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-family: 'Space Mono', monospace; }
 
-  .input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  /* Tabs */
+  .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+  .tab {
+    flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .tab.active-tiktok { border-color: var(--accent); color: var(--accent); background: #1a0008; }
+  .tab.active-insta { border-color: var(--insta); color: var(--insta); background: #1a000d; }
+  .tab:hover:not(.active-tiktok):not(.active-insta) { border-color: #444; color: var(--text); }
+
+  .input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; transition: border-color 0.3s; }
+  .input-card.mode-insta { border-color: #2a1020; }
   .input-label { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 10px; }
   .input-row { display: flex; gap: 8px; }
   .url-input { flex: 1; background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 14px; font-family: 'Space Mono', monospace; outline: none; transition: border-color 0.2s; }
   .url-input:focus { border-color: var(--accent2); }
+  .url-input.focus-insta:focus { border-color: var(--insta); }
   .url-input::placeholder { color: #333; }
-  .btn-fetch { background: var(--accent); border: none; border-radius: 10px; padding: 12px 20px; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; white-space: nowrap; }
+
+  .btn-fetch { border: none; border-radius: 10px; padding: 12px 20px; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; white-space: nowrap; }
+  .btn-fetch.tiktok { background: var(--accent); }
+  .btn-fetch.insta { background: linear-gradient(135deg, var(--insta), var(--insta2)); }
   .btn-fetch:hover { opacity: 0.85; }
   .btn-fetch:active { transform: scale(0.97); }
   .btn-fetch:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -49,18 +68,25 @@
   .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
   .thumb-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
   .video-meta { flex: 1; min-width: 0; }
-  .video-author { font-size: 13px; color: var(--accent2); font-family: 'Space Mono', monospace; margin-bottom: 4px; }
+  .video-author { font-size: 13px; font-family: 'Space Mono', monospace; margin-bottom: 4px; }
+  .video-author.tiktok { color: var(--accent2); }
+  .video-author.insta { color: var(--insta); }
   .video-title { font-size: 14px; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .source-badge { display: inline-block; font-size: 10px; font-family: 'Space Mono', monospace; padding: 2px 7px; border-radius: 5px; margin-bottom: 6px; }
+  .badge-tiktok { background: #1a0008; color: var(--accent); border: 1px solid #3a0015; }
+  .badge-insta { background: #1a000d; color: var(--insta); border: 1px solid #3a0020; }
 
   .dl-options { padding: 1.25rem; display: flex; flex-direction: column; gap: 10px; }
   .dl-btn { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; transition: border-color 0.2s, background 0.2s; background: transparent; }
   .dl-btn:hover { border-color: var(--accent2); background: #0d1a1a; }
+  .dl-btn.insta-btn:hover { border-color: var(--insta); background: #1a0008; }
   .dl-btn.audio:hover { border-color: var(--success); background: #0a1a0d; }
   .dl-btn-left { display: flex; align-items: center; gap: 10px; }
   .dl-tag { font-size: 11px; font-family: 'Space Mono', monospace; padding: 3px 8px; border-radius: 6px; font-weight: 400; }
   .tag-hd { background: #0d2040; color: var(--accent2); }
   .tag-sd { background: #1a1a1a; color: var(--muted); border: 1px solid var(--border); }
   .tag-mp3 { background: #0d2010; color: var(--success); }
+  .tag-img { background: #1a0a1a; color: var(--insta); border: 1px solid #3a1530; }
   .dl-arrow { font-size: 18px; color: var(--muted); }
 
   .footer { text-align: center; margin-top: 2.5rem; font-size: 11px; color: #333; font-family: 'Space Mono', monospace; line-height: 2; }
@@ -77,11 +103,21 @@
     <div class="tagline">Sans pub · Sans filigrane · HD</div>
   </div>
 
-  <div class="input-card">
-    <div class="input-label">// colle ton lien TikTok</div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active-tiktok" id="tabTiktok" onclick="switchTab('tiktok')">
+      <span>🎵</span> TikTok
+    </button>
+    <button class="tab" id="tabInsta" onclick="switchTab('insta')">
+      <span>📸</span> Instagram
+    </button>
+  </div>
+
+  <div class="input-card" id="inputCard">
+    <div class="input-label" id="inputLabel">// colle ton lien TikTok</div>
     <div class="input-row">
       <input class="url-input" id="urlInput" type="text" placeholder="https://www.tiktok.com/@..." />
-      <button class="btn-fetch" id="fetchBtn" onclick="fetchVideo()">↓ Fetch</button>
+      <button class="btn-fetch tiktok" id="fetchBtn" onclick="fetchVideo()">↓ Fetch</button>
     </div>
   </div>
 
@@ -92,8 +128,9 @@
     <div class="video-info">
       <div class="thumb-wrap" id="thumbWrap"><div class="thumb-placeholder">🎵</div></div>
       <div class="video-meta">
-        <div class="video-author" id="videoAuthor">@username</div>
-        <div class="video-title" id="videoTitle">Titre de la vidéo...</div>
+        <div id="sourceBadge" class="source-badge badge-tiktok">TikTok</div>
+        <div class="video-author tiktok" id="videoAuthor">@username</div>
+        <div class="video-title" id="videoTitle">Titre...</div>
       </div>
     </div>
     <div class="dl-options" id="dlOptions"></div>
@@ -106,114 +143,177 @@
 </div>
 
 <script>
-  // Liste de proxies CORS à essayer dans l'ordre
-  const PROXIES = [
-    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-    url => `https://thingproxy.freeboard.io/fetch/${url}`,
-  ];
+  let currentMode = 'tiktok';
 
-  async function tryFetch(tiktokUrl) {
-    const body = new URLSearchParams();
-    body.append('id', tiktokUrl);
-    body.append('locale', 'fr');
-    body.append('tt', 'NmRkNG');
+  function switchTab(mode) {
+    currentMode = mode;
+    const isTiktok = mode === 'tiktok';
 
-    const targetUrl = 'https://ssstik.io/abc?url=dl';
+    document.getElementById('tabTiktok').className = 'tab' + (isTiktok ? ' active-tiktok' : '');
+    document.getElementById('tabInsta').className = 'tab' + (!isTiktok ? ' active-insta' : '');
 
-    // allorigins ne supporte que GET, on encode le POST différemment
-    // On va utiliser une approche GET avec l'API RapidAPI tikwm (gratuite)
-    // tikwm.com - API gratuite TikTok downloader
-    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(tiktokUrl)}&hd=1`;
+    const card = document.getElementById('inputCard');
+    card.className = 'input-card' + (isTiktok ? '' : ' mode-insta');
 
-    for (let i = 0; i < PROXIES.length; i++) {
-      try {
-        const proxyUrl = PROXIES[i](apiUrl);
-        const resp = await fetch(proxyUrl, { method: 'GET' });
-        if (!resp.ok) continue;
-        const text = await resp.text();
-        const json = JSON.parse(text);
-        if (json && (json.data || json.code === 0)) return json;
-      } catch(e) {
-        continue;
-      }
-    }
+    document.getElementById('inputLabel').textContent = isTiktok ? '// colle ton lien TikTok' : '// colle ton lien Instagram';
+    const input = document.getElementById('urlInput');
+    input.placeholder = isTiktok ? 'https://www.tiktok.com/@...' : 'https://www.instagram.com/reel/...';
+    input.className = 'url-input' + (isTiktok ? '' : ' focus-insta');
+    input.value = '';
 
-    // Essai direct tikwm sans proxy
-    const resp = await fetch(apiUrl);
-    if (!resp.ok) throw new Error('Impossible de contacter l\'API');
-    return await resp.json();
+    const btn = document.getElementById('fetchBtn');
+    btn.className = 'btn-fetch ' + (isTiktok ? 'tiktok' : 'insta');
+
+    document.getElementById('resultCard').classList.remove('visible');
+    hideError();
   }
 
   async function fetchVideo() {
     const url = document.getElementById('urlInput').value.trim();
-    if (!url || !url.includes('tiktok.com')) {
-      showError('⚠ Colle un lien TikTok valide.\nEx: https://www.tiktok.com/@user/video/123456789');
-      return;
-    }
+    const isTiktok = currentMode === 'tiktok';
 
-    setLoading(true, 'Récupération de la vidéo...');
+    if (!url) { showError('⚠ Colle un lien valide.'); return; }
+    if (isTiktok && !url.includes('tiktok.com')) { showError('⚠ Ce lien ne semble pas être un lien TikTok.'); return; }
+    if (!isTiktok && !url.includes('instagram.com')) { showError('⚠ Ce lien ne semble pas être un lien Instagram.'); return; }
+
+    setLoading(true, 'Récupération en cours...');
     hideError();
     document.getElementById('resultCard').classList.remove('visible');
 
     try {
-      const json = await tryFetch(url);
-
-      if (!json || json.code === -1 || !json.data) {
-        throw new Error(json?.msg || 'Vidéo introuvable ou privée');
+      let result;
+      if (isTiktok) {
+        result = await fetchTikTok(url);
+      } else {
+        result = await fetchInstagram(url);
       }
-
-      const data = json.data;
-
-      const result = {
-        author: '@' + (data.author?.unique_id || data.author?.nickname || 'unknown'),
-        title: data.title || data.desc || 'Vidéo TikTok',
-        thumbnail: data.cover || data.origin_cover || null,
-        links: []
-      };
-
-      if (data.hdplay) result.links.push({ label: 'HD sans filigrane', tag: 'HD', url: data.hdplay });
-      if (data.play)   result.links.push({ label: 'MP4 sans filigrane', tag: 'SD', url: data.play });
-      if (data.wmplay) result.links.push({ label: 'Avec filigrane', tag: 'SD', url: data.wmplay });
-      if (data.music)  result.links.push({ label: 'Audio MP3', tag: 'MP3', url: data.music });
-
-      displayResult(result);
-
+      displayResult(result, currentMode);
     } catch(e) {
-      showError('❌ ' + e.message + '\n\nEssaie avec un autre lien TikTok.');
+      showError('❌ ' + e.message);
     } finally {
       setLoading(false);
     }
   }
 
-  function displayResult(data) {
+  async function fetchTikTok(url) {
+    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
+    const resp = await fetch(apiUrl);
+    if (!resp.ok) throw new Error('Erreur serveur TikTok');
+    const json = await resp.json();
+    if (!json.data) throw new Error(json.msg || 'Vidéo introuvable ou privée');
+    const d = json.data;
+    const links = [];
+    if (d.hdplay) links.push({ label: 'HD sans filigrane', tag: 'HD', url: d.hdplay });
+    if (d.play)   links.push({ label: 'MP4 sans filigrane', tag: 'SD', url: d.play });
+    if (d.music)  links.push({ label: 'Audio MP3', tag: 'MP3', url: d.music });
+    return {
+      author: '@' + (d.author?.unique_id || d.author?.nickname || 'unknown'),
+      title: d.title || d.desc || 'Vidéo TikTok',
+      thumbnail: d.cover || d.origin_cover || null,
+      links
+    };
+  }
+
+  async function fetchInstagram(url) {
+    // API gratuite snapinsta / instagramsave via allorigins
+    const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://fastdl.app/api/instagram?url=' + encodeURIComponent(url))}`;
+
+    let json = null;
+    try {
+      const r = await fetch(apiUrl);
+      const raw = await r.json();
+      json = JSON.parse(raw.contents);
+    } catch(e) {}
+
+    // Fallback: ssig API
+    if (!json || !json.url) {
+      const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://ssig.app/api/download?url=' + encodeURIComponent(url))}`);
+      const raw2 = await r2.json();
+      try { json = JSON.parse(raw2.contents); } catch(e) {}
+    }
+
+    // Fallback 2: snapinsta via proxy
+    if (!json || !json.url) {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://snapsave.app/action.php')}`;
+      const body = new URLSearchParams({ url });
+      const r3 = await fetch(proxyUrl);
+      const raw3 = await r3.json();
+      try { json = JSON.parse(raw3.contents); } catch(e) {}
+    }
+
+    // Si on a des résultats exploitables
+    if (json && (json.url || json.medias || json.data || json.links)) {
+      const links = [];
+      const medias = json.medias || json.data || (json.url ? [{ url: json.url }] : []);
+      medias.forEach((m, i) => {
+        const u = m.url || m.download_url || m.src;
+        if (!u) return;
+        const isVideo = u.includes('.mp4') || m.type === 'video';
+        links.push({
+          label: isVideo ? `Vidéo ${i + 1}` : `Image ${i + 1}`,
+          tag: isVideo ? 'HD' : 'IMG',
+          url: u
+        });
+      });
+      if (links.length > 0) {
+        return { author: '@instagram', title: json.title || json.caption || 'Post Instagram', thumbnail: json.thumbnail || null, links };
+      }
+    }
+
+    // Fallback final: renvoie vers snapinsta.app
+    return {
+      author: '@instagram',
+      title: 'Lien de téléchargement direct',
+      thumbnail: null,
+      links: [{
+        label: 'Ouvrir sur SnapInsta (sans pub)',
+        tag: 'HD',
+        url: 'https://snapinsta.app/fr?url=' + encodeURIComponent(url)
+      }]
+    };
+  }
+
+  function displayResult(data, mode) {
+    const isTiktok = mode === 'tiktok';
     const thumbWrap = document.getElementById('thumbWrap');
     if (data.thumbnail && data.thumbnail.startsWith('http')) {
-      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>🎵</div>'" />`;
+      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>${isTiktok ? '🎵' : '📸'}</div>'" />`;
+    } else {
+      thumbWrap.innerHTML = `<div class="thumb-placeholder">${isTiktok ? '🎵' : '📸'}</div>`;
     }
-    document.getElementById('videoAuthor').textContent = data.author || '@unknown';
-    document.getElementById('videoTitle').textContent = data.title || 'Vidéo TikTok';
+
+    const badge = document.getElementById('sourceBadge');
+    badge.textContent = isTiktok ? 'TikTok' : 'Instagram';
+    badge.className = 'source-badge ' + (isTiktok ? 'badge-tiktok' : 'badge-insta');
+
+    const authorEl = document.getElementById('videoAuthor');
+    authorEl.textContent = data.author || '@unknown';
+    authorEl.className = 'video-author ' + (isTiktok ? 'tiktok' : 'insta');
+
+    document.getElementById('videoTitle').textContent = data.title || 'Post';
 
     const container = document.getElementById('dlOptions');
     container.innerHTML = '';
-    const tagMap = { 'HD': {cls:'tag-hd',icon:'📹'}, 'SD': {cls:'tag-sd',icon:'🎬'}, 'MP3': {cls:'tag-mp3',icon:'🎵'} };
+    const tagMap = {
+      'HD':  { cls: 'tag-hd',  icon: '📹' },
+      'SD':  { cls: 'tag-sd',  icon: '🎬' },
+      'MP3': { cls: 'tag-mp3', icon: '🎵' },
+      'IMG': { cls: 'tag-img', icon: '🖼️' },
+    };
 
     const seen = new Set();
-    const validLinks = (data.links || []).filter(l => {
-      if (!l.url || seen.has(l.url)) return false;
-      seen.add(l.url); return true;
-    });
+    const validLinks = (data.links || []).filter(l => { if (!l.url || seen.has(l.url)) return false; seen.add(l.url); return true; });
 
     if (!validLinks.length) {
       container.innerHTML = '<div style="color:#666;font-size:13px;font-family:Space Mono,monospace;text-align:center;padding:1rem;">Aucun lien trouvé</div>';
     } else {
       validLinks.forEach(link => {
-        const info = tagMap[link.tag] || {cls:'tag-hd',icon:'📥'};
+        const info = tagMap[link.tag] || { cls: 'tag-hd', icon: '📥' };
         const btn = document.createElement('a');
         btn.href = link.url;
         btn.target = '_blank';
         btn.rel = 'noopener noreferrer';
-        btn.className = `dl-btn${link.tag==='MP3'?' audio':''}`;
+        btn.className = `dl-btn${!isTiktok ? ' insta-btn' : ''}${link.tag === 'MP3' ? ' audio' : ''}`;
         btn.innerHTML = `
           <div class="dl-btn-left">
             <span>${info.icon}</span>
