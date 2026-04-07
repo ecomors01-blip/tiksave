@@ -194,55 +194,96 @@
     });
   }
 
-  // ── Instagram via tikwm (supporte aussi Instagram) ─────────────────────────
+  // ── Instagram via sssinstagram.com ─────────────────────────
   async function fetchInstagram(url) {
-    // tikwm supporte TikTok ET Instagram Reels
-    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
-    let json = null;
+    // Appel direct à l'API sssinstagram (même famille que ssstik)
+    const body = new URLSearchParams();
+    body.append('id', url);
+    body.append('locale', 'fr');
+    body.append('tt', 'NmRkNG');
 
+    const target = 'https://sssinstagram.com/abc?url=dl';
+    const proxy  = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(target);
+
+    let html = null;
     try {
-      const resp = await fetch(apiUrl);
-      if (resp.ok) json = await resp.json();
+      // Essai 1 : allorigins GET (sssinstagram attend un POST — on passe l'url en query)
+      const target2 = `https://sssinstagram.com/abc?url=dl&id=${encodeURIComponent(url)}&locale=fr`;
+      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(target2));
+      if (r.ok) html = await r.text();
     } catch(e) {}
 
-    if (json && json.data && (json.data.play || json.data.hdplay)) {
-      const d = json.data;
-      const links = [];
-      if (d.hdplay) links.push({ label: 'HD Reel', tag: 'HD', url: d.hdplay });
-      if (d.play)   links.push({ label: 'MP4 Reel', tag: 'SD', url: d.play });
-      if (d.music)  links.push({ label: 'Audio MP3', tag: 'MP3', url: d.music });
-      return {
-        author: '@' + (d.author?.unique_id || d.author?.nickname || 'instagram'),
-        title: d.title || d.desc || 'Reel Instagram',
-        thumbnail: d.cover || null,
-        links
-      };
+    // Essai 2 : corsproxy.io POST
+    if (!html) {
+      try {
+        const r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(target), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Referer': 'https://sssinstagram.com/fr' },
+          body: body.toString()
+        });
+        if (r2.ok) html = await r2.text();
+      } catch(e) {}
     }
 
-    // Fallback: API saveig via allorigins
+    // Parser le HTML retourné par sssinstagram
+    if (html && html.length > 100) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const links = [];
+      let thumbnail = null;
+
+      // Thumbnail
+      const img = doc.querySelector('img.picDownload, img.mainImage, .download__photo img, img[src*="cdninstagram"], img[src*="fbcdn"]');
+      if (img) thumbnail = img.src || img.getAttribute('src');
+
+      // Liens de téléchargement
+      doc.querySelectorAll('a[href]').forEach(a => {
+        const href = a.getAttribute('href');
+        if (!href || href === '#' || href.startsWith('javascript')) return;
+        if (href.includes('cdninstagram') || href.includes('fbcdn') || href.includes('.mp4') || href.includes('download')) {
+          const text = a.textContent?.trim() || '';
+          const isVideo = href.includes('.mp4') || text.toLowerCase().includes('vidéo') || text.toLowerCase().includes('video');
+          const isHD = text.toLowerCase().includes('hd') || a.className.includes('hd');
+          links.push({
+            label: isVideo ? (isHD ? 'HD sans filigrane' : 'Vidéo MP4') : 'Photo',
+            tag: isVideo ? (isHD ? 'HD' : 'SD') : 'IMG',
+            url: href.startsWith('http') ? href : 'https://sssinstagram.com' + href
+          });
+        }
+      });
+
+      if (links.length > 0) {
+        return { author: '@instagram', title: 'Post Instagram', thumbnail, links };
+      }
+    }
+
+    // Fallback tikwm (supporte aussi les Reels Instagram)
     try {
-      const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://saveig.app/api?url=' + encodeURIComponent(url))}`;
-      const resp2 = await fetch(proxy);
-      if (resp2.ok) {
-        const j2 = await resp2.json();
-        if (j2 && j2.data && j2.data.length > 0) {
-          const links = j2.data.map((item, i) => ({
-            label: item.type === 'video' ? `Vidéo ${i+1}` : `Photo ${i+1}`,
-            tag: item.type === 'video' ? 'HD' : 'IMG',
-            url: item.url
-          })).filter(l => l.url);
-          if (links.length > 0) return { author: '@instagram', title: 'Post Instagram', thumbnail: null, links };
+      const r3 = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`);
+      if (r3.ok) {
+        const j = await r3.json();
+        if (j?.data?.play) {
+          const d = j.data;
+          const links = [];
+          if (d.hdplay) links.push({ label: 'HD Reel', tag: 'HD', url: d.hdplay });
+          if (d.play)   links.push({ label: 'MP4 Reel', tag: 'SD', url: d.play });
+          if (d.music)  links.push({ label: 'Audio MP3', tag: 'MP3', url: d.music });
+          return {
+            author: '@' + (d.author?.unique_id || 'instagram'),
+            title: d.title || 'Reel Instagram',
+            thumbnail: d.cover || null,
+            links
+          };
         }
       }
     } catch(e) {}
 
-    // Fallback final : redirection manuelle
+    // Fallback final
     return {
       author: '@instagram',
       title: 'Copie le lien et colle-le sur un des sites ci-dessous',
       thumbnail: null,
       links: [
-        { label: 'Ouvrir snapinsta.app', tag: 'HD', url: 'https://snapinsta.app/fr' },
+        { label: 'Ouvrir sssinstagram.com', tag: 'HD', url: 'https://sssinstagram.com/fr' },
         { label: 'Ouvrir saveig.app', tag: 'HD', url: 'https://saveig.app' }
       ]
     };
