@@ -21,22 +21,6 @@
   .logo-name span { color: var(--accent); }
   .tagline { font-size: 13px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-family: 'Space Mono', monospace; }
 
-  /* API Key setup screen */
-  .setup-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
-  .setup-title { font-size: 13px; color: var(--accent2); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 8px; }
-  .setup-desc { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 14px; line-height: 1.6; }
-  .setup-desc a { color: var(--accent2); }
-  .setup-row { display: flex; gap: 8px; }
-  .key-input { flex: 1; background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; font-family: 'Space Mono', monospace; outline: none; transition: border-color 0.2s; }
-  .key-input:focus { border-color: var(--accent2); }
-  .key-input::placeholder { color: #333; }
-  .btn-save { background: #1a2a1a; border: 1px solid var(--success); border-radius: 10px; padding: 12px 16px; color: var(--success); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: opacity 0.2s; }
-  .btn-save:hover { opacity: 0.8; }
-  .key-saved { display: flex; align-items: center; justify-content: space-between; background: #0a1a0a; border: 1px solid #1a3a1a; border-radius: 10px; padding: 10px 14px; }
-  .key-saved-text { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--success); }
-  .btn-reset { background: transparent; border: none; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; text-decoration: underline; }
-
-  /* Main input */
   .input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
   .input-label { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 10px; }
   .input-row { display: flex; gap: 8px; }
@@ -53,7 +37,7 @@
   .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent2); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .error-box { background: #1a0a0a; border: 1px solid #3a1010; border-radius: 12px; padding: 1rem; color: #ff6b6b; font-size: 13px; font-family: 'Space Mono', monospace; margin-bottom: 1.5rem; display: none; white-space: pre-line; }
+  .error-box { background: #1a0a0a; border: 1px solid #3a1010; border-radius: 12px; padding: 1rem; color: #ff6b6b; font-size: 13px; font-family: 'Space Mono', monospace; margin-bottom: 1.5rem; display: none; white-space: pre-line; line-height: 1.6; }
   .error-box.visible { display: block; }
 
   .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: none; animation: fadeIn 0.3s ease; }
@@ -69,7 +53,7 @@
   .video-title { font-size: 14px; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
   .dl-options { padding: 1.25rem; display: flex; flex-direction: column; gap: 10px; }
-  .dl-btn { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; transition: border-color 0.2s, background 0.2s; background: transparent; width: 100%; }
+  .dl-btn { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; transition: border-color 0.2s, background 0.2s; background: transparent; }
   .dl-btn:hover { border-color: var(--accent2); background: #0d1a1a; }
   .dl-btn.audio:hover { border-color: var(--success); background: #0a1a0d; }
   .dl-btn-left { display: flex; align-items: center; gap: 10px; }
@@ -93,28 +77,6 @@
     <div class="tagline">Sans pub · Sans filigrane · HD</div>
   </div>
 
-  <!-- Setup clé API -->
-  <div class="setup-card" id="setupCard">
-    <div class="setup-title">// clé api anthropic</div>
-    <div class="setup-desc">
-      Nécessaire pour utiliser l'app. Gratuit sur <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
-      Stockée uniquement dans ton navigateur, jamais envoyée ailleurs.
-    </div>
-    <div id="setupForm">
-      <div class="setup-row">
-        <input class="key-input" id="keyInput" type="password" placeholder="sk-ant-api03-..." />
-        <button class="btn-save" onclick="saveKey()">✓ Sauver</button>
-      </div>
-    </div>
-    <div id="setupDone" style="display:none;">
-      <div class="key-saved">
-        <span class="key-saved-text">✓ Clé configurée</span>
-        <button class="btn-reset" onclick="resetKey()">Changer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Input URL -->
   <div class="input-card">
     <div class="input-label">// colle ton lien TikTok</div>
     <div class="input-row">
@@ -123,7 +85,7 @@
     </div>
   </div>
 
-  <div class="status" id="status"><span class="spinner"></span> Analyse en cours...</div>
+  <div class="status" id="status"><span class="spinner"></span> <span id="statusText">Analyse en cours...</span></div>
   <div class="error-box" id="errorBox"></div>
 
   <div class="result-card" id="resultCard">
@@ -144,85 +106,104 @@
 </div>
 
 <script>
-  const LS_KEY = 'tiksave_api_key';
-
-  function loadKey() {
-    const k = localStorage.getItem(LS_KEY);
-    if (k) {
-      document.getElementById('setupForm').style.display = 'none';
-      document.getElementById('setupDone').style.display = 'block';
-    }
-  }
-
-  function saveKey() {
-    const k = document.getElementById('keyInput').value.trim();
-    if (!k.startsWith('sk-ant-')) { alert('Clé invalide — elle doit commencer par sk-ant-'); return; }
-    localStorage.setItem(LS_KEY, k);
-    document.getElementById('setupForm').style.display = 'none';
-    document.getElementById('setupDone').style.display = 'block';
-  }
-
-  function resetKey() {
-    localStorage.removeItem(LS_KEY);
-    document.getElementById('keyInput').value = '';
-    document.getElementById('setupForm').style.display = 'block';
-    document.getElementById('setupDone').style.display = 'none';
-  }
+  // On utilise un proxy CORS public pour appeler ssstik directement
+  const CORS_PROXY = 'https://corsproxy.io/?';
+  const SSSTIK_URL = 'https://ssstik.io/abc?url=dl';
 
   async function fetchVideo() {
-    const apiKey = localStorage.getItem(LS_KEY);
-    if (!apiKey) { showError('⚠ Configure ta clé API en haut d\'abord.'); return; }
-
     const url = document.getElementById('urlInput').value.trim();
-    if (!url || !url.includes('tiktok.com')) { showError('⚠ Colle un lien TikTok valide.'); return; }
+    if (!url || !url.includes('tiktok.com')) {
+      showError('⚠ Colle un lien TikTok valide.\nEx: https://www.tiktok.com/@user/video/123456789');
+      return;
+    }
 
-    setLoading(true);
+    setLoading(true, 'Connexion à ssstik...');
     hideError();
     document.getElementById('resultCard').classList.remove('visible');
 
     try {
-      const prompt = `Tu es un assistant qui extrait des liens de téléchargement TikTok.
+      const body = new URLSearchParams();
+      body.append('id', url);
+      body.append('locale', 'fr');
+      body.append('tt', 'NmRkNG');
 
-Fais une requête HTTP POST vers https://ssstik.io/abc?url=dl avec ces paramètres:
-- Header: User-Agent: Mozilla/5.0
-- Header: Content-Type: application/x-www-form-urlencoded
-- Header: Referer: https://ssstik.io/fr
-- Body: id=${encodeURIComponent(url)}&locale=fr&tt=NmRkNG
+      setLoading(true, 'Récupération des liens...');
 
-Réponds UNIQUEMENT en JSON valide (sans markdown, sans backticks):
-{"author":"@username","title":"description","thumbnail":"url_ou_null","links":[{"label":"HD sans filigrane","tag":"HD","url":"lien"},{"label":"Qualité standard","tag":"SD","url":"lien"},{"label":"Audio MP3","tag":"MP3","url":"lien"}]}
-
-Si un lien est introuvable, mets null. Retourne UNIQUEMENT le JSON.`;
-
-      const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
+      const resp = await fetch(CORS_PROXY + encodeURIComponent(SSSTIK_URL), {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true"
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Referer': 'https://ssstik.io/fr',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }]
-        })
+        body: body.toString()
       });
 
-      const data = await resp.json();
-      if (data.error) throw new Error(data.error.message);
-      const text = data.content?.find(b => b.type === 'text')?.text || '';
-      const clean = text.replace(/```json|```/g, '').trim();
-      let result;
-      try { result = JSON.parse(clean); }
-      catch(e) {
-        const match = clean.match(/\{[\s\S]*\}/);
-        if (match) result = JSON.parse(match[0]);
-        else throw new Error('Réponse invalide');
+      if (!resp.ok) throw new Error('Erreur serveur : ' + resp.status);
+
+      const html = await resp.text();
+
+      // Parser la réponse HTML de ssstik
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Extraire les infos
+      const authorEl = doc.querySelector('.mainAuthor') || doc.querySelector('h2') || doc.querySelector('.author');
+      const titleEl = doc.querySelector('p.mainText') || doc.querySelector('.desc') || doc.querySelector('p');
+      const thumbEl = doc.querySelector('img.mainPicture') || doc.querySelector('.thumb img') || doc.querySelector('img');
+
+      const author = authorEl?.textContent?.trim() || '@unknown';
+      const title = titleEl?.textContent?.trim() || 'Vidéo TikTok';
+      const thumb = thumbEl?.src || thumbEl?.getAttribute('src') || null;
+
+      // Extraire les liens de téléchargement
+      const links = [];
+      const allLinks = doc.querySelectorAll('a[href]');
+
+      allLinks.forEach(a => {
+        const href = a.href || a.getAttribute('href');
+        const text = a.textContent?.trim().toLowerCase() || '';
+        const cls = a.className || '';
+
+        if (!href || href === '#' || href.includes('javascript')) return;
+
+        if (href.includes('.mp4') || href.includes('download') || href.includes('muscdn') || href.includes('tiktok')) {
+          if (text.includes('hd') || text.includes('sans filigrane') || text.includes('no watermark') || cls.includes('hd')) {
+            links.push({ label: 'HD sans filigrane', tag: 'HD', url: href });
+          } else if (text.includes('mp3') || text.includes('audio') || text.includes('music')) {
+            links.push({ label: 'Audio MP3', tag: 'MP3', url: href });
+          } else if (href.includes('.mp4') || text.includes('download') || text.includes('télécharger')) {
+            links.push({ label: 'Vidéo MP4', tag: 'SD', url: href });
+          }
+        }
+      });
+
+      // Fallback : chercher tous les boutons de téléchargement
+      if (links.length === 0) {
+        const btns = doc.querySelectorAll('a.btn, a.download, a[download], a.pure-button');
+        btns.forEach(a => {
+          const href = a.href || a.getAttribute('href');
+          if (href && href.startsWith('http')) {
+            const text = a.textContent?.trim() || 'Télécharger';
+            links.push({ label: text, tag: 'HD', url: href });
+          }
+        });
       }
-      displayResult(result);
+
+      if (links.length === 0) {
+        // Dernier fallback : tous les liens externes
+        allLinks.forEach(a => {
+          const href = a.getAttribute('href');
+          if (href && (href.startsWith('https://') || href.startsWith('http://')) && !href.includes('ssstik.io')) {
+            links.push({ label: a.textContent?.trim() || 'Télécharger', tag: 'HD', url: href });
+          }
+        });
+      }
+
+      displayResult({ author, title, thumbnail: thumb, links: links.slice(0, 4) });
+
     } catch(e) {
-      showError('❌ ' + e.message);
+      showError('❌ Erreur : ' + e.message + '\n\nEssaie avec un autre lien TikTok.');
     } finally {
       setLoading(false);
     }
@@ -230,32 +211,50 @@ Si un lien est introuvable, mets null. Retourne UNIQUEMENT le JSON.`;
 
   function displayResult(data) {
     const thumbWrap = document.getElementById('thumbWrap');
-    if (data.thumbnail && data.thumbnail !== 'null') {
-      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>🎵</div>'" />`;
+    if (data.thumbnail && data.thumbnail.startsWith('http')) {
+      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>🎵</div>'" crossorigin="anonymous" />`;
     }
     document.getElementById('videoAuthor').textContent = data.author || '@unknown';
     document.getElementById('videoTitle').textContent = data.title || 'Vidéo TikTok';
+
     const container = document.getElementById('dlOptions');
     container.innerHTML = '';
     const tagMap = { 'HD': {cls:'tag-hd',icon:'📹'}, 'SD': {cls:'tag-sd',icon:'🎬'}, 'MP3': {cls:'tag-mp3',icon:'🎵'} };
-    const validLinks = (data.links || []).filter(l => l.url && l.url !== 'null');
+
+    const seen = new Set();
+    const validLinks = (data.links || []).filter(l => {
+      if (!l.url || seen.has(l.url)) return false;
+      seen.add(l.url);
+      return true;
+    });
+
     if (!validLinks.length) {
-      container.innerHTML = '<div style="color:#666;font-size:13px;font-family:Space Mono,monospace;text-align:center;padding:1rem;">Aucun lien trouvé</div>';
+      container.innerHTML = '<div style="color:#666;font-size:13px;font-family:Space Mono,monospace;text-align:center;padding:1rem;">Aucun lien trouvé — essaie un autre lien</div>';
     } else {
       validLinks.forEach(link => {
-        const info = tagMap[link.tag] || {cls:'tag-sd',icon:'📥'};
+        const info = tagMap[link.tag] || {cls:'tag-hd',icon:'📥'};
         const btn = document.createElement('a');
-        btn.href = link.url; btn.target = '_blank'; btn.rel = 'noopener noreferrer';
+        btn.href = link.url;
+        btn.target = '_blank';
+        btn.rel = 'noopener noreferrer';
         btn.className = `dl-btn${link.tag==='MP3'?' audio':''}`;
-        btn.innerHTML = `<div class="dl-btn-left"><span>${info.icon}</span><span>${link.label}</span><span class="dl-tag ${info.cls}">${link.tag}</span></div><span class="dl-arrow">↗</span>`;
+        btn.innerHTML = `
+          <div class="dl-btn-left">
+            <span>${info.icon}</span>
+            <span>${link.label}</span>
+            <span class="dl-tag ${info.cls}">${link.tag}</span>
+          </div>
+          <span class="dl-arrow">↗</span>
+        `;
         container.appendChild(btn);
       });
     }
     document.getElementById('resultCard').classList.add('visible');
   }
 
-  function setLoading(on) {
+  function setLoading(on, msg) {
     document.getElementById('status').classList.toggle('visible', on);
+    if (msg) document.getElementById('statusText').textContent = msg;
     document.getElementById('fetchBtn').disabled = on;
     document.getElementById('fetchBtn').textContent = on ? '...' : '↓ Fetch';
   }
@@ -263,7 +262,6 @@ Si un lien est introuvable, mets null. Retourne UNIQUEMENT le JSON.`;
   function hideError() { document.getElementById('errorBox').classList.remove('visible'); }
 
   document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') fetchVideo(); });
-  loadKey();
 </script>
 </body>
 </html>
