@@ -106,9 +106,44 @@
 </div>
 
 <script>
-  // On utilise un proxy CORS public pour appeler ssstik directement
-  const CORS_PROXY = 'https://corsproxy.io/?';
-  const SSSTIK_URL = 'https://ssstik.io/abc?url=dl';
+  // Liste de proxies CORS à essayer dans l'ordre
+  const PROXIES = [
+    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+    url => `https://thingproxy.freeboard.io/fetch/${url}`,
+  ];
+
+  async function tryFetch(tiktokUrl) {
+    const body = new URLSearchParams();
+    body.append('id', tiktokUrl);
+    body.append('locale', 'fr');
+    body.append('tt', 'NmRkNG');
+
+    const targetUrl = 'https://ssstik.io/abc?url=dl';
+
+    // allorigins ne supporte que GET, on encode le POST différemment
+    // On va utiliser une approche GET avec l'API RapidAPI tikwm (gratuite)
+    // tikwm.com - API gratuite TikTok downloader
+    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(tiktokUrl)}&hd=1`;
+
+    for (let i = 0; i < PROXIES.length; i++) {
+      try {
+        const proxyUrl = PROXIES[i](apiUrl);
+        const resp = await fetch(proxyUrl, { method: 'GET' });
+        if (!resp.ok) continue;
+        const text = await resp.text();
+        const json = JSON.parse(text);
+        if (json && (json.data || json.code === 0)) return json;
+      } catch(e) {
+        continue;
+      }
+    }
+
+    // Essai direct tikwm sans proxy
+    const resp = await fetch(apiUrl);
+    if (!resp.ok) throw new Error('Impossible de contacter l\'API');
+    return await resp.json();
+  }
 
   async function fetchVideo() {
     const url = document.getElementById('urlInput').value.trim();
@@ -117,93 +152,35 @@
       return;
     }
 
-    setLoading(true, 'Connexion à ssstik...');
+    setLoading(true, 'Récupération de la vidéo...');
     hideError();
     document.getElementById('resultCard').classList.remove('visible');
 
     try {
-      const body = new URLSearchParams();
-      body.append('id', url);
-      body.append('locale', 'fr');
-      body.append('tt', 'NmRkNG');
+      const json = await tryFetch(url);
 
-      setLoading(true, 'Récupération des liens...');
-
-      const resp = await fetch(CORS_PROXY + encodeURIComponent(SSSTIK_URL), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Referer': 'https://ssstik.io/fr',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        },
-        body: body.toString()
-      });
-
-      if (!resp.ok) throw new Error('Erreur serveur : ' + resp.status);
-
-      const html = await resp.text();
-
-      // Parser la réponse HTML de ssstik
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-
-      // Extraire les infos
-      const authorEl = doc.querySelector('.mainAuthor') || doc.querySelector('h2') || doc.querySelector('.author');
-      const titleEl = doc.querySelector('p.mainText') || doc.querySelector('.desc') || doc.querySelector('p');
-      const thumbEl = doc.querySelector('img.mainPicture') || doc.querySelector('.thumb img') || doc.querySelector('img');
-
-      const author = authorEl?.textContent?.trim() || '@unknown';
-      const title = titleEl?.textContent?.trim() || 'Vidéo TikTok';
-      const thumb = thumbEl?.src || thumbEl?.getAttribute('src') || null;
-
-      // Extraire les liens de téléchargement
-      const links = [];
-      const allLinks = doc.querySelectorAll('a[href]');
-
-      allLinks.forEach(a => {
-        const href = a.href || a.getAttribute('href');
-        const text = a.textContent?.trim().toLowerCase() || '';
-        const cls = a.className || '';
-
-        if (!href || href === '#' || href.includes('javascript')) return;
-
-        if (href.includes('.mp4') || href.includes('download') || href.includes('muscdn') || href.includes('tiktok')) {
-          if (text.includes('hd') || text.includes('sans filigrane') || text.includes('no watermark') || cls.includes('hd')) {
-            links.push({ label: 'HD sans filigrane', tag: 'HD', url: href });
-          } else if (text.includes('mp3') || text.includes('audio') || text.includes('music')) {
-            links.push({ label: 'Audio MP3', tag: 'MP3', url: href });
-          } else if (href.includes('.mp4') || text.includes('download') || text.includes('télécharger')) {
-            links.push({ label: 'Vidéo MP4', tag: 'SD', url: href });
-          }
-        }
-      });
-
-      // Fallback : chercher tous les boutons de téléchargement
-      if (links.length === 0) {
-        const btns = doc.querySelectorAll('a.btn, a.download, a[download], a.pure-button');
-        btns.forEach(a => {
-          const href = a.href || a.getAttribute('href');
-          if (href && href.startsWith('http')) {
-            const text = a.textContent?.trim() || 'Télécharger';
-            links.push({ label: text, tag: 'HD', url: href });
-          }
-        });
+      if (!json || json.code === -1 || !json.data) {
+        throw new Error(json?.msg || 'Vidéo introuvable ou privée');
       }
 
-      if (links.length === 0) {
-        // Dernier fallback : tous les liens externes
-        allLinks.forEach(a => {
-          const href = a.getAttribute('href');
-          if (href && (href.startsWith('https://') || href.startsWith('http://')) && !href.includes('ssstik.io')) {
-            links.push({ label: a.textContent?.trim() || 'Télécharger', tag: 'HD', url: href });
-          }
-        });
-      }
+      const data = json.data;
 
-      displayResult({ author, title, thumbnail: thumb, links: links.slice(0, 4) });
+      const result = {
+        author: '@' + (data.author?.unique_id || data.author?.nickname || 'unknown'),
+        title: data.title || data.desc || 'Vidéo TikTok',
+        thumbnail: data.cover || data.origin_cover || null,
+        links: []
+      };
+
+      if (data.hdplay) result.links.push({ label: 'HD sans filigrane', tag: 'HD', url: data.hdplay });
+      if (data.play)   result.links.push({ label: 'MP4 sans filigrane', tag: 'SD', url: data.play });
+      if (data.wmplay) result.links.push({ label: 'Avec filigrane', tag: 'SD', url: data.wmplay });
+      if (data.music)  result.links.push({ label: 'Audio MP3', tag: 'MP3', url: data.music });
+
+      displayResult(result);
 
     } catch(e) {
-      showError('❌ Erreur : ' + e.message + '\n\nEssaie avec un autre lien TikTok.');
+      showError('❌ ' + e.message + '\n\nEssaie avec un autre lien TikTok.');
     } finally {
       setLoading(false);
     }
@@ -212,7 +189,7 @@
   function displayResult(data) {
     const thumbWrap = document.getElementById('thumbWrap');
     if (data.thumbnail && data.thumbnail.startsWith('http')) {
-      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>🎵</div>'" crossorigin="anonymous" />`;
+      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>🎵</div>'" />`;
     }
     document.getElementById('videoAuthor').textContent = data.author || '@unknown';
     document.getElementById('videoTitle').textContent = data.title || 'Vidéo TikTok';
@@ -224,12 +201,11 @@
     const seen = new Set();
     const validLinks = (data.links || []).filter(l => {
       if (!l.url || seen.has(l.url)) return false;
-      seen.add(l.url);
-      return true;
+      seen.add(l.url); return true;
     });
 
     if (!validLinks.length) {
-      container.innerHTML = '<div style="color:#666;font-size:13px;font-family:Space Mono,monospace;text-align:center;padding:1rem;">Aucun lien trouvé — essaie un autre lien</div>';
+      container.innerHTML = '<div style="color:#666;font-size:13px;font-family:Space Mono,monospace;text-align:center;padding:1rem;">Aucun lien trouvé</div>';
     } else {
       validLinks.forEach(link => {
         const info = tagMap[link.tag] || {cls:'tag-hd',icon:'📥'};
@@ -260,7 +236,6 @@
   }
   function showError(msg) { const b = document.getElementById('errorBox'); b.textContent = msg; b.classList.add('visible'); }
   function hideError() { document.getElementById('errorBox').classList.remove('visible'); }
-
   document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') fetchVideo(); });
 </script>
 </body>
