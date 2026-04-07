@@ -9,12 +9,11 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #0a0a0a; --surface: #111; --border: #222;
-    --accent: #fe2c55; --accent2: #25f4ee;
-    --insta: #E1306C; --insta2: #F77737;
+    --accent: #fe2c55; --accent2: #25f4ee; --accent3: #e1306c;
     --text: #f0f0f0; --muted: #666; --success: #1db954;
   }
   body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
-  .app { width: 100%; max-width: 560px; }
+  .app { width: 100%; max-width: 580px; }
 
   .header { text-align: center; margin-bottom: 2.5rem; }
   .logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1rem; }
@@ -24,29 +23,21 @@
   .tagline { font-size: 13px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-family: 'Space Mono', monospace; }
 
   /* Tabs */
-  .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; }
-  .tab {
-    flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); font-family: 'Syne', sans-serif;
-    font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .tab.active-tiktok { border-color: var(--accent); color: var(--accent); background: #1a0008; }
-  .tab.active-insta { border-color: var(--insta); color: var(--insta); background: #1a000d; }
-  .tab:hover:not(.active-tiktok):not(.active-insta) { border-color: #444; color: var(--text); }
+  .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 6px; }
+  .tab { flex: 1; padding: 10px; border: none; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; background: transparent; color: var(--muted); }
+  .tab.active-tiktok { background: var(--accent); color: #fff; }
+  .tab.active-insta { background: var(--accent3); color: #fff; }
+  .tab:not(.active-tiktok):not(.active-insta):hover { color: var(--text); }
 
-  .input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; transition: border-color 0.3s; }
-  .input-card.mode-insta { border-color: #2a1020; }
+  .input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
   .input-label { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 10px; }
   .input-row { display: flex; gap: 8px; }
   .url-input { flex: 1; background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 14px; font-family: 'Space Mono', monospace; outline: none; transition: border-color 0.2s; }
   .url-input:focus { border-color: var(--accent2); }
-  .url-input.focus-insta:focus { border-color: var(--insta); }
   .url-input::placeholder { color: #333; }
-
   .btn-fetch { border: none; border-radius: 10px; padding: 12px 20px; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; white-space: nowrap; }
   .btn-fetch.tiktok { background: var(--accent); }
-  .btn-fetch.insta { background: linear-gradient(135deg, var(--insta), var(--insta2)); }
+  .btn-fetch.insta { background: var(--accent3); }
   .btn-fetch:hover { opacity: 0.85; }
   .btn-fetch:active { transform: scale(0.97); }
   .btn-fetch:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -68,25 +59,23 @@
   .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
   .thumb-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
   .video-meta { flex: 1; min-width: 0; }
-  .video-author { font-size: 13px; font-family: 'Space Mono', monospace; margin-bottom: 4px; }
-  .video-author.tiktok { color: var(--accent2); }
-  .video-author.insta { color: var(--insta); }
+  .platform-badge { display: inline-block; font-size: 10px; font-family: 'Space Mono', monospace; padding: 2px 8px; border-radius: 20px; margin-bottom: 6px; font-weight: 700; }
+  .badge-tiktok { background: #1a0a0d; color: var(--accent); border: 1px solid var(--accent); }
+  .badge-insta { background: #1a0010; color: var(--accent3); border: 1px solid var(--accent3); }
+  .video-author { font-size: 13px; color: var(--accent2); font-family: 'Space Mono', monospace; margin-bottom: 4px; }
   .video-title { font-size: 14px; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .source-badge { display: inline-block; font-size: 10px; font-family: 'Space Mono', monospace; padding: 2px 7px; border-radius: 5px; margin-bottom: 6px; }
-  .badge-tiktok { background: #1a0008; color: var(--accent); border: 1px solid #3a0015; }
-  .badge-insta { background: #1a000d; color: var(--insta); border: 1px solid #3a0020; }
 
   .dl-options { padding: 1.25rem; display: flex; flex-direction: column; gap: 10px; }
   .dl-btn { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; transition: border-color 0.2s, background 0.2s; background: transparent; }
   .dl-btn:hover { border-color: var(--accent2); background: #0d1a1a; }
-  .dl-btn.insta-btn:hover { border-color: var(--insta); background: #1a0008; }
   .dl-btn.audio:hover { border-color: var(--success); background: #0a1a0d; }
+  .dl-btn.photo:hover { border-color: var(--accent3); background: #1a0010; }
   .dl-btn-left { display: flex; align-items: center; gap: 10px; }
   .dl-tag { font-size: 11px; font-family: 'Space Mono', monospace; padding: 3px 8px; border-radius: 6px; font-weight: 400; }
   .tag-hd { background: #0d2040; color: var(--accent2); }
   .tag-sd { background: #1a1a1a; color: var(--muted); border: 1px solid var(--border); }
   .tag-mp3 { background: #0d2010; color: var(--success); }
-  .tag-img { background: #1a0a1a; color: var(--insta); border: 1px solid #3a1530; }
+  .tag-img { background: #1a0015; color: var(--accent3); }
   .dl-arrow { font-size: 18px; color: var(--muted); }
 
   .footer { text-align: center; margin-top: 2.5rem; font-size: 11px; color: #333; font-family: 'Space Mono', monospace; line-height: 2; }
@@ -105,15 +94,11 @@
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active-tiktok" id="tabTiktok" onclick="switchTab('tiktok')">
-      <span>🎵</span> TikTok
-    </button>
-    <button class="tab" id="tabInsta" onclick="switchTab('insta')">
-      <span>📸</span> Instagram
-    </button>
+    <button class="tab active-tiktok" id="tab-tiktok" onclick="switchTab('tiktok')">🎵 TikTok</button>
+    <button class="tab" id="tab-insta" onclick="switchTab('insta')">📸 Instagram</button>
   </div>
 
-  <div class="input-card" id="inputCard">
+  <div class="input-card">
     <div class="input-label" id="inputLabel">// colle ton lien TikTok</div>
     <div class="input-row">
       <input class="url-input" id="urlInput" type="text" placeholder="https://www.tiktok.com/@..." />
@@ -128,8 +113,8 @@
     <div class="video-info">
       <div class="thumb-wrap" id="thumbWrap"><div class="thumb-placeholder">🎵</div></div>
       <div class="video-meta">
-        <div id="sourceBadge" class="source-badge badge-tiktok">TikTok</div>
-        <div class="video-author tiktok" id="videoAuthor">@username</div>
+        <div id="platformBadge"></div>
+        <div class="video-author" id="videoAuthor">@username</div>
         <div class="video-title" id="videoTitle">Titre...</div>
       </div>
     </div>
@@ -143,51 +128,43 @@
 </div>
 
 <script>
-  let currentMode = 'tiktok';
+  let currentTab = 'tiktok';
 
-  function switchTab(mode) {
-    currentMode = mode;
-    const isTiktok = mode === 'tiktok';
-
-    document.getElementById('tabTiktok').className = 'tab' + (isTiktok ? ' active-tiktok' : '');
-    document.getElementById('tabInsta').className = 'tab' + (!isTiktok ? ' active-insta' : '');
-
-    const card = document.getElementById('inputCard');
-    card.className = 'input-card' + (isTiktok ? '' : ' mode-insta');
-
-    document.getElementById('inputLabel').textContent = isTiktok ? '// colle ton lien TikTok' : '// colle ton lien Instagram';
-    const input = document.getElementById('urlInput');
-    input.placeholder = isTiktok ? 'https://www.tiktok.com/@...' : 'https://www.instagram.com/reel/...';
-    input.className = 'url-input' + (isTiktok ? '' : ' focus-insta');
-    input.value = '';
-
-    const btn = document.getElementById('fetchBtn');
-    btn.className = 'btn-fetch ' + (isTiktok ? 'tiktok' : 'insta');
-
-    document.getElementById('resultCard').classList.remove('visible');
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-tiktok').className = 'tab' + (tab === 'tiktok' ? ' active-tiktok' : '');
+    document.getElementById('tab-insta').className = 'tab' + (tab === 'insta' ? ' active-insta' : '');
+    document.getElementById('fetchBtn').className = 'btn-fetch ' + (tab === 'tiktok' ? 'tiktok' : 'insta');
+    document.getElementById('inputLabel').textContent = tab === 'tiktok' ? '// colle ton lien TikTok' : '// colle ton lien Instagram';
+    document.getElementById('urlInput').placeholder = tab === 'tiktok'
+      ? 'https://www.tiktok.com/@...'
+      : 'https://www.instagram.com/p/... ou /reel/...';
+    document.getElementById('urlInput').value = '';
     hideError();
+    document.getElementById('resultCard').classList.remove('visible');
   }
 
   async function fetchVideo() {
     const url = document.getElementById('urlInput').value.trim();
-    const isTiktok = currentMode === 'tiktok';
-
     if (!url) { showError('⚠ Colle un lien valide.'); return; }
-    if (isTiktok && !url.includes('tiktok.com')) { showError('⚠ Ce lien ne semble pas être un lien TikTok.'); return; }
-    if (!isTiktok && !url.includes('instagram.com')) { showError('⚠ Ce lien ne semble pas être un lien Instagram.'); return; }
+
+    if (currentTab === 'tiktok' && !url.includes('tiktok.com')) {
+      showError('⚠ Ce lien ne ressemble pas à un lien TikTok.'); return;
+    }
+    if (currentTab === 'insta' && !url.includes('instagram.com')) {
+      showError('⚠ Ce lien ne ressemble pas à un lien Instagram.'); return;
+    }
 
     setLoading(true, 'Récupération en cours...');
     hideError();
     document.getElementById('resultCard').classList.remove('visible');
 
     try {
-      let result;
-      if (isTiktok) {
-        result = await fetchTikTok(url);
+      if (currentTab === 'tiktok') {
+        await fetchTikTok(url);
       } else {
-        result = await fetchInstagram(url);
+        await fetchInstagram(url);
       }
-      displayResult(result, currentMode);
     } catch(e) {
       showError('❌ ' + e.message);
     } finally {
@@ -195,135 +172,126 @@
     }
   }
 
+  // ── TikTok via tikwm.com ──────────────────────────────────────────
   async function fetchTikTok(url) {
     const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
     const resp = await fetch(apiUrl);
-    if (!resp.ok) throw new Error('Erreur serveur TikTok');
+    if (!resp.ok) throw new Error('Erreur serveur TikTok : ' + resp.status);
     const json = await resp.json();
     if (!json.data) throw new Error(json.msg || 'Vidéo introuvable ou privée');
     const d = json.data;
     const links = [];
-    if (d.hdplay) links.push({ label: 'HD sans filigrane', tag: 'HD', url: d.hdplay });
-    if (d.play)   links.push({ label: 'MP4 sans filigrane', tag: 'SD', url: d.play });
-    if (d.music)  links.push({ label: 'Audio MP3', tag: 'MP3', url: d.music });
-    return {
-      author: '@' + (d.author?.unique_id || d.author?.nickname || 'unknown'),
+    if (d.hdplay) links.push({ label: 'HD sans filigrane', tag: 'HD', url: d.hdplay, icon: '📹' });
+    if (d.play)   links.push({ label: 'MP4 sans filigrane', tag: 'SD', url: d.play, icon: '🎬' });
+    if (d.wmplay) links.push({ label: 'Avec filigrane', tag: 'SD', url: d.wmplay, icon: '🎬' });
+    if (d.music)  links.push({ label: 'Audio MP3', tag: 'MP3', url: d.music, icon: '🎵' });
+    displayResult({
+      platform: 'tiktok',
+      author: '@' + (d.author?.unique_id || 'unknown'),
       title: d.title || d.desc || 'Vidéo TikTok',
-      thumbnail: d.cover || d.origin_cover || null,
+      thumbnail: d.cover || d.origin_cover,
       links
-    };
+    });
   }
 
+  // ── Instagram via tikwm (supporte aussi Instagram) ─────────────────────────
   async function fetchInstagram(url) {
-    // API gratuite snapinsta / instagramsave via allorigins
-    const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://fastdl.app/api/instagram?url=' + encodeURIComponent(url))}`;
-
+    // tikwm supporte TikTok ET Instagram Reels
+    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`;
     let json = null;
+
     try {
-      const r = await fetch(apiUrl);
-      const raw = await r.json();
-      json = JSON.parse(raw.contents);
+      const resp = await fetch(apiUrl);
+      if (resp.ok) json = await resp.json();
     } catch(e) {}
 
-    // Fallback: ssig API
-    if (!json || !json.url) {
-      const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://ssig.app/api/download?url=' + encodeURIComponent(url))}`);
-      const raw2 = await r2.json();
-      try { json = JSON.parse(raw2.contents); } catch(e) {}
-    }
-
-    // Fallback 2: snapinsta via proxy
-    if (!json || !json.url) {
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://snapsave.app/action.php')}`;
-      const body = new URLSearchParams({ url });
-      const r3 = await fetch(proxyUrl);
-      const raw3 = await r3.json();
-      try { json = JSON.parse(raw3.contents); } catch(e) {}
-    }
-
-    // Si on a des résultats exploitables
-    if (json && (json.url || json.medias || json.data || json.links)) {
+    if (json && json.data && (json.data.play || json.data.hdplay)) {
+      const d = json.data;
       const links = [];
-      const medias = json.medias || json.data || (json.url ? [{ url: json.url }] : []);
-      medias.forEach((m, i) => {
-        const u = m.url || m.download_url || m.src;
-        if (!u) return;
-        const isVideo = u.includes('.mp4') || m.type === 'video';
-        links.push({
-          label: isVideo ? `Vidéo ${i + 1}` : `Image ${i + 1}`,
-          tag: isVideo ? 'HD' : 'IMG',
-          url: u
-        });
-      });
-      if (links.length > 0) {
-        return { author: '@instagram', title: json.title || json.caption || 'Post Instagram', thumbnail: json.thumbnail || null, links };
-      }
+      if (d.hdplay) links.push({ label: 'HD Reel', tag: 'HD', url: d.hdplay });
+      if (d.play)   links.push({ label: 'MP4 Reel', tag: 'SD', url: d.play });
+      if (d.music)  links.push({ label: 'Audio MP3', tag: 'MP3', url: d.music });
+      return {
+        author: '@' + (d.author?.unique_id || d.author?.nickname || 'instagram'),
+        title: d.title || d.desc || 'Reel Instagram',
+        thumbnail: d.cover || null,
+        links
+      };
     }
 
-    // Fallback final: renvoie vers snapinsta.app
+    // Fallback: API saveig via allorigins
+    try {
+      const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://saveig.app/api?url=' + encodeURIComponent(url))}`;
+      const resp2 = await fetch(proxy);
+      if (resp2.ok) {
+        const j2 = await resp2.json();
+        if (j2 && j2.data && j2.data.length > 0) {
+          const links = j2.data.map((item, i) => ({
+            label: item.type === 'video' ? `Vidéo ${i+1}` : `Photo ${i+1}`,
+            tag: item.type === 'video' ? 'HD' : 'IMG',
+            url: item.url
+          })).filter(l => l.url);
+          if (links.length > 0) return { author: '@instagram', title: 'Post Instagram', thumbnail: null, links };
+        }
+      }
+    } catch(e) {}
+
+    // Fallback final : redirection manuelle
     return {
       author: '@instagram',
-      title: 'Lien de téléchargement direct',
+      title: 'Copie le lien et colle-le sur un des sites ci-dessous',
       thumbnail: null,
-      links: [{
-        label: 'Ouvrir sur SnapInsta (sans pub)',
-        tag: 'HD',
-        url: 'https://snapinsta.app/fr?url=' + encodeURIComponent(url)
-      }]
+      links: [
+        { label: 'Ouvrir snapinsta.app', tag: 'HD', url: 'https://snapinsta.app/fr' },
+        { label: 'Ouvrir saveig.app', tag: 'HD', url: 'https://saveig.app' }
+      ]
     };
   }
 
-  function displayResult(data, mode) {
-    const isTiktok = mode === 'tiktok';
+  function displayResult(data) {
     const thumbWrap = document.getElementById('thumbWrap');
+    const emoji = data.platform === 'tiktok' ? '🎵' : '📸';
     if (data.thumbnail && data.thumbnail.startsWith('http')) {
-      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>${isTiktok ? '🎵' : '📸'}</div>'" />`;
+      thumbWrap.innerHTML = `<img src="${data.thumbnail}" alt="thumb" onerror="this.parentElement.innerHTML='<div class=thumb-placeholder>${emoji}</div>'" />`;
     } else {
-      thumbWrap.innerHTML = `<div class="thumb-placeholder">${isTiktok ? '🎵' : '📸'}</div>`;
+      thumbWrap.innerHTML = `<div class="thumb-placeholder">${emoji}</div>`;
     }
 
-    const badge = document.getElementById('sourceBadge');
-    badge.textContent = isTiktok ? 'TikTok' : 'Instagram';
-    badge.className = 'source-badge ' + (isTiktok ? 'badge-tiktok' : 'badge-insta');
+    const badge = document.getElementById('platformBadge');
+    badge.innerHTML = data.platform === 'tiktok'
+      ? '<span class="platform-badge badge-tiktok">TikTok</span>'
+      : '<span class="platform-badge badge-insta">Instagram</span>';
 
-    const authorEl = document.getElementById('videoAuthor');
-    authorEl.textContent = data.author || '@unknown';
-    authorEl.className = 'video-author ' + (isTiktok ? 'tiktok' : 'insta');
-
-    document.getElementById('videoTitle').textContent = data.title || 'Post';
+    document.getElementById('videoAuthor').textContent = data.author || '@unknown';
+    document.getElementById('videoTitle').textContent = data.title || 'Contenu';
 
     const container = document.getElementById('dlOptions');
     container.innerHTML = '';
-    const tagMap = {
-      'HD':  { cls: 'tag-hd',  icon: '📹' },
-      'SD':  { cls: 'tag-sd',  icon: '🎬' },
-      'MP3': { cls: 'tag-mp3', icon: '🎵' },
-      'IMG': { cls: 'tag-img', icon: '🖼️' },
-    };
+    const tagClass = { HD: 'tag-hd', SD: 'tag-sd', MP3: 'tag-mp3', IMG: 'tag-img' };
 
     const seen = new Set();
-    const validLinks = (data.links || []).filter(l => { if (!l.url || seen.has(l.url)) return false; seen.add(l.url); return true; });
+    (data.links || []).filter(l => {
+      if (!l.url || seen.has(l.url)) return false;
+      seen.add(l.url); return true;
+    }).forEach(link => {
+      const btn = document.createElement('a');
+      btn.href = link.url; btn.target = '_blank'; btn.rel = 'noopener noreferrer';
+      const isAudio = link.tag === 'MP3';
+      const isPhoto = link.tag === 'IMG';
+      btn.className = `dl-btn${isAudio ? ' audio' : ''}${isPhoto ? ' photo' : ''}`;
+      btn.innerHTML = `
+        <div class="dl-btn-left">
+          <span>${link.icon || '📥'}</span>
+          <span>${link.label}</span>
+          <span class="dl-tag ${tagClass[link.tag] || 'tag-sd'}">${link.tag}</span>
+        </div>
+        <span class="dl-arrow">↗</span>
+      `;
+      container.appendChild(btn);
+    });
 
-    if (!validLinks.length) {
+    if (!container.children.length) {
       container.innerHTML = '<div style="color:#666;font-size:13px;font-family:Space Mono,monospace;text-align:center;padding:1rem;">Aucun lien trouvé</div>';
-    } else {
-      validLinks.forEach(link => {
-        const info = tagMap[link.tag] || { cls: 'tag-hd', icon: '📥' };
-        const btn = document.createElement('a');
-        btn.href = link.url;
-        btn.target = '_blank';
-        btn.rel = 'noopener noreferrer';
-        btn.className = `dl-btn${!isTiktok ? ' insta-btn' : ''}${link.tag === 'MP3' ? ' audio' : ''}`;
-        btn.innerHTML = `
-          <div class="dl-btn-left">
-            <span>${info.icon}</span>
-            <span>${link.label}</span>
-            <span class="dl-tag ${info.cls}">${link.tag}</span>
-          </div>
-          <span class="dl-arrow">↗</span>
-        `;
-        container.appendChild(btn);
-      });
     }
     document.getElementById('resultCard').classList.add('visible');
   }
